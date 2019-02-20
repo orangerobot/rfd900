@@ -30,15 +30,23 @@ COMMANDS = {
     "air_speed": {"cmd": "ATS2={}", "validator": None},
     "netid": {"cmd": "ATS3={}", "validator": None},
     "txpower": {"cmd": "ATS4={}", "validator": None},
+    "ecc": {"cmd": "ATS5={}", "validator": None},
     "rxframe": {"cmd": "ATS6={}", "validator": None},
     "min_freq": {"cmd": "ATS8={}", "validator": None},  # min frequency in kHz
     "max_freq": {"cmd": "ATS9={}", "validator": None},  # max frequency in kHz
+    "num_channels": {"cmd": "ATS10={}", "validator": None},  # number of frequency hopping channels.
+    "rtscts": {"cmd": "ATS13={}", "validator": None},  # Ready to send and clear to send
+    "max_window": {"cmd": "ATS14={}", "validator": None},  # max transmit window size used to limit latency
     "encryption_level": {"cmd": "ATS15={}", "validator": None},  # enable encryption
     "encryption_key": {"cmd": "AT&E={}", "validator": None},  # set key only on 900x
     "target_rssi": {"cmd": "ATR0={}", "validator": None},
     "hysteresis_rssi": {"cmd": "ATR1={}", "validator": None},
     "nodeid": {"cmd": "ATS18={}", "validator": None},
     "nodedestination": {"cmd": "ATS19={}", "validator": None},
+    "netcount": {"cmd": "ATS20={}", "validator": None}, # number of networks on the master node
+    "nodecount0": {"cmd": "AT&M0=0,{}", "validator": None}, # max number of nodes in network 0
+    "nodecount7": {"cmd": "AT&M1=7,{}", "validator": None}, # max number of nodes in network 7
+    "nodecount13": {"cmd": "AT&M2=13,{}", "validator": None}, # max number of nodes in network 13
 }
 
 if len(args) == 0:
@@ -70,7 +78,7 @@ def configure_radio(device, config):
         xonxoff=opts.xonxoff,
     )
 
-    fout = open("rfd900.log", "wb+")
+    fout = open("rfd900.log", "ab")
     fout.write(
         "========== {} {} ============ \r\n".format(datetime.now(), device).encode(
             "ascii"
@@ -104,8 +112,13 @@ def configure_radio(device, config):
         ser.sendline(cmd.format(value).encode("ascii"))
         ser.expect("OK")
 
+    ser.sendline("AT&T") # Disable debug messages
+    time.sleep(0.2)
+    #ser.expect("OK")
+
     ser.sendline("AT&W")
     ser.expect("OK")
+
     ser.sendline("ATI5")
     time.sleep(0.2)
     for _ in range(25):
