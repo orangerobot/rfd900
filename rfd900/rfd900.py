@@ -44,6 +44,7 @@ MP_COMMANDS = {
     "nodeid": {"cmd": "ATS18={}", "validator": None},
     "nodedestination": {"cmd": "ATS19={}", "validator": None},
     "netcount": {"cmd": "ATS20={}", "validator": None}, # number of networks on the master node
+    "masterbackup": {"cmd": "ATS22={}", "validator": None}, # ???? 
     "nodecount0": {"cmd": "AT&M0=0,{}", "validator": None}, # max number of nodes in network 0
     "nodecount7": {"cmd": "AT&M1=7,{}", "validator": None}, # max number of nodes in network 7
     "nodecount13": {"cmd": "AT&M2=13,{}", "validator": None}, # max number of nodes in network 13
@@ -81,8 +82,10 @@ if len(args) == 0:
 
 
 def parse_firmware(value):
-    #RFD ASYNC 2.47 on RFD900xR1.1
+    # RFD ASYNC 2.47 on RFD900xR1.1
     # [2] RFD SiK 2.75MP on RFD900xR1.1
+    # RFD SiK 1.9 on RFD900P
+    #[1] MP SiK 2.6 on RFD900P
     v = value.decode("utf-8")
     if "ASYNC" in v:
         return "ASYNC"
